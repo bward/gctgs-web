@@ -33,8 +33,7 @@ namespace GctgsWeb
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
-            const string connection = @"server=localhost;port=3306;database=GctgsWeb;uid=gctgs;password=gctgs";
-            services.AddDbContext<GctgsContext>(options => options.UseMySql(connection));
+            services.AddDbContext<GctgsContext>(options => options.UseMySql(Configuration.GetConnectionString("database")));
             services.AddMvc();
         }
 
