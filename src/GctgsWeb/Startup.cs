@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using GctgsWeb.Models;
 
 namespace GctgsWeb
 {
@@ -35,7 +33,8 @@ namespace GctgsWeb
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
-
+            const string connection = @"server=localhost;port=3306;database=GctgsWeb;uid=gctgs;password=gctgs";
+            services.AddDbContext<GctgsContext>(options => options.UseMySql(connection));
             services.AddMvc();
         }
 
@@ -65,7 +64,7 @@ namespace GctgsWeb
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=BoardGames}/{action=Index}/{id?}");
             });
         }
     }
