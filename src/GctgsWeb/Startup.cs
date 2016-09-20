@@ -33,6 +33,7 @@ namespace GctgsWeb
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddMemoryCache();
             services.AddDbContext<GctgsContext>(options => options.UseMySql(Configuration.GetConnectionString("database")));
             services.AddMvc();
         }

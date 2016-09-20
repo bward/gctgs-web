@@ -1,4 +1,8 @@
-﻿@model IEnumerable<GctgsWeb.Models.BoardGame>
+﻿@using System.Threading.Tasks
+@using GctgsWeb.Models
+@using Microsoft.Extensions.Caching.Memory
+@model IEnumerable<GctgsWeb.Models.BoardGame>
+@inject IMemoryCache MemoryCache
 
 @{
     ViewBag.Title = "Board Games";
@@ -14,17 +18,30 @@
     <tr>
         <th>Id</th>
         <th>Name</th>
+        <th>Rating</th>
+        <th>Picture</th>
     </tr>
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-        </tr>
+    @{
+        foreach (var item in Model)
+        {
+            var details = await item.BggDetails(MemoryCache);
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @details.Rating
+                </td>
+                <td>
+                    <img src="@details.ThumbnailUrl"/>
+                </td>
+            </tr>
+        }
+
     }
+       
 </table>
