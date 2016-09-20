@@ -8,9 +8,10 @@ using GctgsWeb.Models;
 namespace GctgsWeb.Migrations
 {
     [DbContext(typeof(GctgsContext))]
-    partial class GctgsContextModelSnapshot : ModelSnapshot
+    [Migration("20160920200947_Location")]
+    partial class Location
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
