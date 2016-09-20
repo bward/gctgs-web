@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using GctgsWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace GctgsWeb.Controllers
 {
+    [Authorize]
     public class BoardGamesController : Controller
     {
         private readonly GctgsContext _context;

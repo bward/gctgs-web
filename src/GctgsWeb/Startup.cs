@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Reflection;
+using BJW.Raven;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using GctgsWeb.Models;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.FileProviders;
 
 namespace GctgsWeb
 {
@@ -35,7 +40,18 @@ namespace GctgsWeb
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddMemoryCache();
             services.AddDbContext<GctgsContext>(options => options.UseMySql(Configuration.GetConnectionString("database")));
-            services.AddMvc();
+            services.AddSingleton(RavenClientProvider);
+            var ravenAssembly = Assembly.Load(new AssemblyName("BJW.Raven"));
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProviders.Add(new EmbeddedFileProvider(ravenAssembly));
+            });
+            services.AddMvc().AddApplicationPart(ravenAssembly);
+        }
+
+        public WebAuthClient RavenClientProvider(IServiceProvider provider)
+        {
+            return new DemoWebAuthClient("http://localhost:5000");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,10 +72,8 @@ namespace GctgsWeb
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseApplicationInsightsExceptionTelemetry();
-
             app.UseStaticFiles();
-
+            app.UseCookieAuthentication(CookieAuthentication.DefaultOptions);
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

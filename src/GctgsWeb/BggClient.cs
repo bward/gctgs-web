@@ -52,10 +52,7 @@ namespace GctgsWeb
                         new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromDays(365)));
                 }
             }
-            else
-            {
-                Debug.WriteLine("got " + name + " from cache!");
-            }
+
             return result;
         }
 
