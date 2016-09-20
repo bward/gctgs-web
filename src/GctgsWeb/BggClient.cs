@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,7 +65,8 @@ namespace GctgsWeb
             {
                 var response = await client.GetAsync(_baseUrl + "search?exact=1&type=boardgame&query=" + name);
                 var document = XDocument.Parse(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
-                return (int)document.Root.Element("item").Attribute("id");
+                var item = document.Root.Elements("item").OrderByDescending(i => (int) i.Attribute("id")).First();
+                return (int) item.Attribute("id");
             }
         }
 
