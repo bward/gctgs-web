@@ -34,6 +34,8 @@ namespace GctgsWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(BoardGame boardGame)
         {
+            boardGame.Owner = _context.Users.Single(u => u.Crsid == User.Identity.Name);
+
             if (ModelState.IsValid)
             {
                 _context.BoardGames.Add(boardGame);

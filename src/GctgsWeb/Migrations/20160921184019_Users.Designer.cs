@@ -8,9 +8,10 @@ using GctgsWeb.Models;
 namespace GctgsWeb.Migrations
 {
     [DbContext(typeof(GctgsContext))]
-    partial class GctgsContextModelSnapshot : ModelSnapshot
+    [Migration("20160921184019_Users")]
+    partial class Users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
@@ -37,8 +38,6 @@ namespace GctgsWeb.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Admin");
 
                     b.Property<string>("Crsid");
 

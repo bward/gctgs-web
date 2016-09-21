@@ -9,6 +9,9 @@ namespace GctgsWeb.Models
         public string Name { get; set; }
         public string Location { get; set; }
 
+        public int OwnerId { get; set; }
+        public User Owner { get; set; }
+
         public async Task<BggDetails> BggDetails(IMemoryCache memoryCache)
         {
             var client = new BggClient(memoryCache);

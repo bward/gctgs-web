@@ -9,5 +9,6 @@ namespace GctgsWeb.Models
         { }
 
         public DbSet<BoardGame> BoardGames { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
