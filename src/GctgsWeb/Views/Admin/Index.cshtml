@@ -1,0 +1,38 @@
+﻿@using System.Collections
+@using System.Threading.Tasks
+@using GctgsWeb.Models
+@using Microsoft.Extensions.Caching.Memory
+@model IEnumerable<GctgsWeb.Models.User>
+
+@{
+    ViewBag.Title = "Admin";
+}
+
+<h2>Users</h2>
+
+@{ Html.RenderPartial("_Create");}
+
+<table class="table">
+    <tr>
+        <th>CRSID</th>
+        <th>Name</th>
+        <th>Admin</th>
+    </tr>
+
+    @{
+        foreach (var item in (IEnumerable<User>) ViewData["users"])
+        {
+            <tr>
+                <td>
+                    @item.Crsid
+                </td>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Admin
+                </td>
+            </tr>
+        }
+    }
+</table>
