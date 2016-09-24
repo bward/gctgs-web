@@ -16,8 +16,8 @@
 
 <table class="table">
     <tr>
-        <th>Id</th>
         <th>Name</th>
+        <th>Owner</th>
         <th>Location</th>
         <th>Rating</th>
         <th>Picture</th>
@@ -29,13 +29,13 @@
             var details = await item.BggDetails(MemoryCache);
             <tr>
                 <td>
-                    @item.Id
+                    <a href="/boardgames/boardgame/@item.Id">@item.Name</a>
                 </td>
                 <td>
-                    @item.Name
+                    <a href="/boardgames/owners/@item.Owner.Crsid">@item.Owner.Name</a>
                 </td>
                 <td>
-                    @item.Location
+                    <a href="/boardgames/locations/@item.Location">@item.Location</a>
                 </td>
                 <td>
                     @details.Rating

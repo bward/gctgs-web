@@ -1,0 +1,21 @@
+﻿@using Microsoft.Extensions.Caching.Memory
+@using GctgsWeb.Models
+@model GctgsWeb.Models.BoardGame
+@inject IMemoryCache MemoryCache
+
+@{
+ViewBag.Title = "Board Game Details";
+}
+
+<h2>@Model.Name</h2>
+<ul>
+    <li><strong>Owner:</strong> @Model.Owner.Name</li>
+    <li><strong>Location:</strong> @Model.Location</li>
+</ul>
+@{
+    var details = await Model.BggDetails(MemoryCache);
+    <img src="@details.ThumbnailUrl" />
+    <p> @details.Rating</p>
+    <p>@Html.Raw(details.Description)</p>
+
+}
