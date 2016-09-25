@@ -80,7 +80,7 @@ namespace GctgsWeb.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("boardgames/create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(BoardGame boardGame)
         {
