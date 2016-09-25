@@ -1,11 +1,9 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using GctgsWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace GctgsWeb.Controllers
 {
@@ -13,7 +11,7 @@ namespace GctgsWeb.Controllers
     public class BoardGamesController : Controller
     {
         private readonly GctgsContext _context;
-        private readonly  IMemoryCache _memoryCache;
+        private readonly IMemoryCache _memoryCache;
 
         public BoardGamesController(GctgsContext context, IMemoryCache memoryCache)
         {
@@ -29,7 +27,7 @@ namespace GctgsWeb.Controllers
                 .ToList());
         }
 
-        [HttpGet("boardgames/boardgame/{id}")]
+        [HttpGet("boardgames/{id}")]
         public IActionResult BoardGame(int id)
         {
             var result = _context.BoardGames
@@ -37,7 +35,44 @@ namespace GctgsWeb.Controllers
                 .Include(boardGame => boardGame.Owner)
                 .SingleOrDefault();
 
-            return result != null ? View(result) : (ActionResult) new NotFoundResult();
+            if (result == null) return new NotFoundResult();
+
+            if (_context.IsAdmin(User))
+            {
+                ViewData["Admin"] = true;
+                return View("Edit", result);
+            }
+            if (User.Identity.Name == result.Owner.Crsid)
+            {
+                ViewData["Admin"] = false;
+                return View("Edit", result);
+            }
+            return View(result);
+        }
+
+        [HttpPost("boardgames/boardgame/{id}")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, BoardGame updatedBoardGame)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = _context.BoardGames
+                    .Where(boardGame => boardGame.Id == id)
+                    .Include(boardGame => boardGame.Owner)
+                    .SingleOrDefault();
+
+                if ((result.Owner.Crsid != User.Identity.Name) &&
+                    !_context.IsAdmin(User))
+                    return Unauthorized();
+
+                if (_context.IsAdmin(User)) result.Name = updatedBoardGame.Name;
+                result.Location = updatedBoardGame.Location;
+                _context.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+
+            return View(updatedBoardGame);
         }
 
         [HttpGet("boardgames/locations/{location}")]

@@ -1,0 +1,50 @@
+﻿@using Microsoft.Extensions.Caching.Memory
+@using GctgsWeb.Models
+@model GctgsWeb.Models.BoardGame
+@inject IMemoryCache MemoryCache
+
+@{
+ViewBag.Title = "Edit Board Game";
+}
+
+<h2>Editing @Model.Name</h2>
+
+<form asp-controller="BoardGames" asp-action="Edit" method="post" class="form-horizontal" role="form">
+    <div class="form-horizontal">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                @if ((bool) ViewData["Admin"])
+                {
+                    <input asp-for="Name" value="@Model.Name" class="form-control" />
+                }
+                else
+                {
+                    <input asp-for="Name" value="@Model.Name" class="form-control" readonly/>
+                }
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Location" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Location" value="@Model.Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Update" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@{
+    var details = await Model.BggDetails(MemoryCache);
+    <img src="@details.ThumbnailUrl" />
+    <p> @details.Rating</p>
+    <p>@Html.Raw(details.Description)</p>
+
+}
