@@ -11,23 +11,26 @@
 <h2>Board Games</h2>
 
 <p>
-    <a asp-controller="BoardGames" asp-action="Create">Create New</a>
+    <a href="/boardgames/create" class="btn btn-success">Create New</a>
 </p>
 
 <table class="table">
     <tr>
+        <th></th>
         <th>Name</th>
         <th>Owner</th>
         <th>Location</th>
         <th>Rating</th>
-        <th>Picture</th>
     </tr>
 
     @{
         foreach (var item in Model)
         {
             var details = await item.BggDetails(MemoryCache);
-            <tr>
+            <tr style="@(User.Identity.Name == item.Owner.Crsid ? "font-weight: bold" : "")">
+                <td>
+                    <a href="/boardgames/@item.Id"><img src="@details.ThumbnailUrl" /></a>
+</td>
                 <td>
                     <a href="/boardgames/@item.Id">@item.Name</a>
                 </td>
@@ -39,9 +42,6 @@
                 </td>
                 <td>
                     @details.Rating
-                </td>
-                <td>
-                    <img src="@details.ThumbnailUrl"/>
                 </td>
             </tr>
         }

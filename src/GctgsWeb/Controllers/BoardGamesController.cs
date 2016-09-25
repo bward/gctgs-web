@@ -50,7 +50,7 @@ namespace GctgsWeb.Controllers
             return View(result);
         }
 
-        [HttpPost("boardgames/boardgame/{id}")]
+        [HttpPost("boardgames/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, BoardGame updatedBoardGame)
         {
@@ -114,6 +114,7 @@ namespace GctgsWeb.Controllers
                 .ToList());
         }
 
+        [HttpGet("boardgames/create")]
         public IActionResult Create()
         {
             return View();
