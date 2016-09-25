@@ -48,3 +48,9 @@ ViewBag.Title = "Edit Board Game";
     <p>@Html.Raw(details.Description)</p>
 
 }
+
+<form asp-controller="BoardGames" asp-action="Delete" method="post" class="form-horizontal" role="form">
+    <div class="form-horizontal">
+            <input type="submit" value="Delete" class="btn btn-danger" />
+    </div>
+</form>

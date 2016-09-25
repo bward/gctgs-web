@@ -75,6 +75,25 @@ namespace GctgsWeb.Controllers
             return View(updatedBoardGame);
         }
 
+        [HttpPost("boardgames/delete/{id}")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            var result = _context.BoardGames
+                .Where(boardGame => boardGame.Id == id)
+                .Include(boardGame => boardGame.Owner)
+                .SingleOrDefault();
+
+            if ((result.Owner.Crsid != User.Identity.Name) &&
+                !_context.IsAdmin(User))
+                return Unauthorized();
+
+            _context.BoardGames.Remove(result);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
         [HttpGet("boardgames/locations/{location}")]
         public IActionResult Locations(string location)
         {
