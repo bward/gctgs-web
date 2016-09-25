@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GctgsWeb.Controllers
 {
-    [Authorize]
+    [Authorize("RegisteredUser")]
     public class BoardGamesController : Controller
     {
         private readonly GctgsContext _context;

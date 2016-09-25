@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using GctgsWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GctgsWeb.Controllers
 {
+    [Authorize("Admin")]
     public class AdminController : Controller
     {
         private readonly GctgsContext _context;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using BJW.Raven;
+using GctgsWeb.Authorisation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using GctgsWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.FileProviders;
 
@@ -49,14 +51,20 @@ namespace GctgsWeb
                 options.FileProviders.Add(new EmbeddedFileProvider(ravenAssembly));
             });
             services.AddMvc().AddApplicationPart(ravenAssembly);
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RegisteredUser",
+                    policy => policy.Requirements.Add(new RegisteredUserRequirement()));
+                options.AddPolicy("Admin",
+                    policy => policy.Requirements.Add(new AdminRequirement()));
+            });
+            services.AddSingleton<IAuthorizationHandler, RegisteredUserHandler>();
+            services.AddSingleton<IAuthorizationHandler, AdminHandler>();
         }
 
         public WebAuthClient RavenClientProvider(IServiceProvider provider)
         {
-            if (CurrentEnvironment.IsDevelopment())
-                return new DemoWebAuthClient(Configuration["URL"]);
-            else
-                return new WebAuthClient(Configuration["URL"]);
+            return CurrentEnvironment.IsDevelopment() ? new DemoWebAuthClient(Configuration["URL"]) : new WebAuthClient(Configuration["URL"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
