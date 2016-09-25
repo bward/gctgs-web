@@ -29,8 +29,10 @@ namespace GctgsWeb
                 builder.AddApplicationInsightsSettings(developerMode: true);
             }
             Configuration = builder.Build();
+            CurrentEnvironment = env;
         }
 
+        private IHostingEnvironment CurrentEnvironment { get; set; }
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -39,7 +41,7 @@ namespace GctgsWeb
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddMemoryCache();
-            services.AddDbContext<GctgsContext>(options => options.UseMySql(Configuration.GetConnectionString("database")));
+            services.AddDbContext<GctgsContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton(RavenClientProvider);
             var ravenAssembly = Assembly.Load(new AssemblyName("BJW.Raven"));
             services.Configure<RazorViewEngineOptions>(options =>
@@ -51,7 +53,10 @@ namespace GctgsWeb
 
         public WebAuthClient RavenClientProvider(IServiceProvider provider)
         {
-            return new DemoWebAuthClient("http://localhost:5000");
+            if (CurrentEnvironment.IsDevelopment())
+                return new DemoWebAuthClient(Configuration["URL"]);
+            else
+                return new WebAuthClient(Configuration["URL"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,12 +79,17 @@ namespace GctgsWeb
 
             app.UseStaticFiles();
             app.UseCookieAuthentication(CookieAuthentication.DefaultOptions);
+
+            var context = app.ApplicationServices.GetService<GctgsContext>();
+            context.Database.Migrate();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=BoardGames}/{action=Index}/{id?}");
             });
+
         }
     }
 }
