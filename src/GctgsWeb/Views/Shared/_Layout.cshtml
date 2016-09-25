@@ -18,7 +18,7 @@
     @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-static-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -40,10 +40,11 @@
         </div>
     </div>
     <div class="container body-content">
+        <div id="notifications"></div>
         @RenderBody()
-        <hr />
+        <hr/>
         <footer>
-            <p>&copy; 2016 - GctgsWeb</p>
+            <p>&copy; 2016 - GCTGS</p>
         </footer>
     </div>
 

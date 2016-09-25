@@ -15,7 +15,7 @@ ViewBag.Title = "Edit Board Game";
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                @if ((bool) ViewData["Admin"])
+                @if (ViewBag.Admin)
                 {
                     <input asp-for="Name" value="@Model.Name" class="form-control" />
                 }

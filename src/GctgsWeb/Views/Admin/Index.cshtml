@@ -20,7 +20,7 @@
     </tr>
 
     @{
-        foreach (var item in (IEnumerable<User>) ViewData["users"])
+        foreach (var item in ViewBag.Users)
         {
             <tr>
                 <td>

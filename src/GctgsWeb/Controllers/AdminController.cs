@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using GctgsWeb.Models;
+using GctgsWeb.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ namespace GctgsWeb.Controllers
         public IActionResult Index()
         {
             var users = _context.Users.ToList();
-            ViewData["users"] = users;
+            ViewBag.Users = users;
             return View();
         }
 

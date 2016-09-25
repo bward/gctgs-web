@@ -11,7 +11,7 @@
 <h2>Board Games</h2>
 
 <p>
-    <a href="/boardgames/create" class="btn btn-success">Create New</a>
+    <a asp-controller="BoardGames" asp-action="Create" class="btn btn-success">Create New</a>
 </p>
 
 <table class="table">
@@ -21,6 +21,7 @@
         <th>Owner</th>
         <th>Location</th>
         <th>Rating</th>
+        <th></th>
     </tr>
 
     @{
@@ -29,19 +30,25 @@
             var details = await item.BggDetails(MemoryCache);
             <tr style="@(User.Identity.Name == item.Owner.Crsid ? "font-weight: bold" : "")">
                 <td>
-                    <a href="/boardgames/@item.Id"><img src="@details.ThumbnailUrl" /></a>
-</td>
-                <td>
-                    <a href="/boardgames/@item.Id">@item.Name</a>
+                    <a asp-controller="BoardGames" asp-action="BoardGame" asp-route-id="@item.Id"><img src="@details.ThumbnailUrl" /></a>
                 </td>
                 <td>
-                    <a href="/boardgames/owners/@item.Owner.Crsid">@item.Owner.Name</a>
+                    <a asp-controller="BoardGames" asp-action="BoardGame" asp-route-id="@item.Id">@item.Name</a>
                 </td>
                 <td>
-                    <a href="/boardgames/locations/@item.Location">@item.Location</a>
+                    <a asp-controller="BoardGames" asp-action="Owners" asp-route-owner="@item.Owner.Crsid">@item.Owner.Name</a>
+                </td>
+                <td>
+                    <a asp-controller="BoardGames" asp-action="Locations" asp-route-location="@item.Location">@item.Location</a>
                 </td>
                 <td>
                     @details.Rating
+                </td>
+                <td>
+                    @if (User.Identity.Name != item.Owner.Crsid)
+                    {
+                        <a href="#" class="request btn btn-primary" data-board-game-id="@item.Id">Request</a>
+                    }
                 </td>
             </tr>
         }

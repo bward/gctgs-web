@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using GctgsWeb.Services;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace GctgsWeb.Models

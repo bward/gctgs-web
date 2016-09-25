@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using GctgsWeb.Models;
+using GctgsWeb.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace GctgsWeb.Authorisation

@@ -2,6 +2,8 @@
 using System.Reflection;
 using BJW.Raven;
 using GctgsWeb.Authorisation;
+using GctgsWeb.Models;
+using GctgsWeb.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -41,6 +43,7 @@ namespace GctgsWeb
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             services.AddMemoryCache();
             services.AddDbContext<GctgsContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton(RavenClientProvider);

@@ -3,14 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using GctgsWeb.Models;
 using GctgsWeb.Services;
 
 namespace GctgsWeb.Migrations
 {
     [DbContext(typeof(GctgsContext))]
-    [Migration("20160921185825_Admin")]
-    partial class Admin
+    [Migration("20160925194509_Requests")]
+    partial class Requests
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,6 +32,26 @@ namespace GctgsWeb.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("BoardGames");
+                });
+
+            modelBuilder.Entity("GctgsWeb.Models.Request", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BoardGameId");
+
+                    b.Property<DateTime>("DateTime");
+
+                    b.Property<int>("RequesterId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoardGameId");
+
+                    b.HasIndex("RequesterId");
+
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("GctgsWeb.Models.User", b =>
@@ -58,6 +77,19 @@ namespace GctgsWeb.Migrations
                     b.HasOne("GctgsWeb.Models.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GctgsWeb.Models.Request", b =>
+                {
+                    b.HasOne("GctgsWeb.Models.BoardGame", "BoardGame")
+                        .WithMany()
+                        .HasForeignKey("BoardGameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GctgsWeb.Models.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequesterId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }

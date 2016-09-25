@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GctgsWeb.Models;
+using GctgsWeb.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace GctgsWeb.Controllers
 {
@@ -11,12 +15,12 @@ namespace GctgsWeb.Controllers
     public class BoardGamesController : Controller
     {
         private readonly GctgsContext _context;
-        private readonly IMemoryCache _memoryCache;
+        private readonly EmailSettings _emailSettings;
 
-        public BoardGamesController(GctgsContext context, IMemoryCache memoryCache)
+        public BoardGamesController(GctgsContext context, IOptions<EmailSettings> emailSettings)
         {
             _context = context;
-            _memoryCache = memoryCache;
+            _emailSettings = emailSettings.Value;
         }
 
         public IActionResult Index()
@@ -39,15 +43,57 @@ namespace GctgsWeb.Controllers
 
             if (_context.IsAdmin(User))
             {
-                ViewData["Admin"] = true;
+                ViewBag.Admin = true;
                 return View("Edit", result);
             }
             if (User.Identity.Name == result.Owner.Crsid)
             {
-                ViewData["Admin"] = false;
+                ViewBag.Admin = false;
                 return View("Edit", result);
             }
             return View(result);
+        }
+
+        [HttpGet("boardgames/locations/{location}")]
+        public IActionResult Locations(string location)
+        {
+            return View("Index", _context.BoardGames
+                .Include(boardGame => boardGame.Owner)
+                .Where(boardGame => boardGame.Location == location)
+                .OrderBy(boardGame => boardGame.Name)
+                .ToList());
+        }
+
+        [HttpGet("boardgames/owners/{owner}")]
+        public IActionResult Owners(string owner)
+        {
+            return View("Index", _context.BoardGames
+                .Include(boardGame => boardGame.Owner)
+                .Where(boardGame => boardGame.Owner.Crsid == owner)
+                .OrderBy(boardGame => boardGame.Name)
+                .ToList());
+        }
+
+        [HttpGet("boardgames/create")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(BoardGame boardGame)
+        {
+            boardGame.Owner = _context.Users.Single(u => u.Crsid == User.Identity.Name);
+
+            if (ModelState.IsValid)
+            {
+                _context.BoardGames.Add(boardGame);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(boardGame);
         }
 
         [HttpPost("boardgames/{id}")]
@@ -94,46 +140,34 @@ namespace GctgsWeb.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet("boardgames/locations/{location}")]
-        public IActionResult Locations(string location)
+        [HttpPost("boardgames/request/{id}")]
+        public async Task<IActionResult> RequestBoardGame(int id)
         {
-            return View("Index", _context.BoardGames
+            var result = _context.BoardGames
+                .Where(boardGame => boardGame.Id == id)
                 .Include(boardGame => boardGame.Owner)
-                .Where(boardGame => boardGame.Location == location)
-                .OrderBy(boardGame => boardGame.Name)
-                .ToList());
-        }
+                .SingleOrDefault();
 
-        [HttpGet("boardgames/owners/{owner}")]
-        public IActionResult Owners(string owner)
-        {
-            return View("Index", _context.BoardGames
-                .Include(boardGame => boardGame.Owner)
-                .Where(boardGame => boardGame.Owner.Crsid == owner)
-                .OrderBy(boardGame => boardGame.Name)
-                .ToList());
-        }
+            var requester = _context.Users.Single(user => user.Crsid == User.Identity.Name);
 
-        [HttpGet("boardgames/create")]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(BoardGame boardGame)
-        {
-            boardGame.Owner = _context.Users.Single(u => u.Crsid == User.Identity.Name);
-
-            if (ModelState.IsValid)
+            var request = new Request
             {
-                _context.BoardGames.Add(boardGame);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                DateTime = DateTime.Now,
+                Requester = requester,
+                BoardGame = result
+            };
 
-            return View(boardGame);
+            var emailClient = new MailgunClient(_emailSettings);
+            await emailClient.SendEmailAsync(result.Owner.Email,
+                requester.Name + " would like to play " + result.Name + "!",
+                "Hi " + result.Owner.Name + "!\n\n"
+                + requester.Name + " has asked for a game of " + result.Name + ". Why not bring it to the next meeting?"
+                + "\n\nHave fun,\nGCTGS Bot xoxo");
+
+            _context.Requests.Add(request);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Error()

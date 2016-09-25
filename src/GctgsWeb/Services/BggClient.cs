@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using GctgsWeb.Models;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace GctgsWeb
+namespace GctgsWeb.Services
 {
     public class BggClient
     {

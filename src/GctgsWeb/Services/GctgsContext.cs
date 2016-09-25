@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
 
-namespace GctgsWeb
+namespace GctgsWeb.Services
 {
     public class GctgsContext : DbContext
     {
@@ -13,6 +13,7 @@ namespace GctgsWeb
 
         public DbSet<BoardGame> BoardGames { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Request> Requests { get; set; }
 
         public bool IsAdmin(ClaimsPrincipal User)
         {
