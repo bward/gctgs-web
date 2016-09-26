@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Security.Cryptography;
 using GctgsWeb.Models;
 using GctgsWeb.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -27,12 +29,17 @@ namespace GctgsWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index(User user)
         {
-            if (ModelState.IsValid)
+            using (var rng = RandomNumberGenerator.Create())
             {
-                _context.Users.Add(user);
-                _context.SaveChanges();
+                var keyData = new byte[32];
+                rng.GetBytes(keyData);
+                user.Key = Convert.ToBase64String(keyData);
+                if (ModelState.IsValid)
+                {
+                    _context.Users.Add(user);
+                    _context.SaveChanges();
+                }
             }
-
             return RedirectToAction("Index");
         }
     }
