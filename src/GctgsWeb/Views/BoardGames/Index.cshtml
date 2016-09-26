@@ -27,7 +27,7 @@
     @{
         foreach (var item in Model)
         {
-            var details = await item.BggDetails(MemoryCache);
+            var details = await item.GetBggDetails(MemoryCache);
             <tr style="@(User.Identity.Name == item.Owner.Crsid ? "font-weight: bold" : "")">
                 <td>
                     <a asp-controller="BoardGames" asp-action="BoardGame" asp-route-id="@item.Id"><img src="@details.ThumbnailUrl" /></a>

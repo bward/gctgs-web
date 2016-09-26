@@ -42,7 +42,7 @@ ViewBag.Title = "Edit Board Game";
 </form>
 
 @{
-    var details = await Model.BggDetails(MemoryCache);
+    var details = await Model.GetBggDetails(MemoryCache);
     <img src="@details.ThumbnailUrl" />
     <p> @details.Rating</p>
     <p>@Html.Raw(details.Description)</p>
