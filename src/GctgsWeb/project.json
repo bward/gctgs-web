@@ -4,15 +4,12 @@
       "version": "1.0.1",
       "type": "platform"
     },
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
-    "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.Razor.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
@@ -24,13 +21,15 @@
     "BJW.Raven": "1.0.1",
     "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final",
     "Microsoft.EntityFrameworkCore.Tools.Core": "1.0.0-rc2-final",
-    "Pomelo.EntityFrameworkCore.MySql": "1.0.0",
     "Microsoft.Extensions.Caching.Memory": "1.0.0",
-    "Microsoft.Extensions.FileProviders.Embedded": "1.0.0"
-  },
+    "Microsoft.Extensions.FileProviders.Embedded": "1.0.0",
+    "MySql.Data.EntityFrameworkCore": "7.0.5-IR21",
+    "BundlerMinifier.Core": "2.2.281",
+    "Microsoft.ApplicationInsights.AspNetCore": "1.0.1",
+    "Microsoft.AspNetCore.Mvc": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1"  },
 
   "tools": {
-    "BundlerMinifier.Core": "2.0.238",
     "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final",
     "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final"
