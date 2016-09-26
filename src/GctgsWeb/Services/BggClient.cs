@@ -13,7 +13,7 @@ namespace GctgsWeb.Services
     public class BggClient
     {
         private readonly string _baseUrl = "http://www.boardgamegeek.com/xmlapi2/";
-        private IMemoryCache _memoryCache;
+        private readonly IMemoryCache _memoryCache;
 
         public BggClient(IMemoryCache memoryCache)
         {
@@ -25,32 +25,36 @@ namespace GctgsWeb.Services
             BggDetails result;
             if (!_memoryCache.TryGetValue(name, out result))
             {
-                var id = GetId(name);
-
-                using (var client = new HttpClient())
-                {
-                    var response = await client.GetAsync(_baseUrl + "thing?stats=1&id=" + await id);
-                    var document =
-                        XDocument.Parse(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
-                    var item = document.Root.Element("item");
-
-                    var thumbnailUrl = item.Element("thumbnail").Value;
-                    var description = item.Element("description").Value;
-                    var rating = item.Element("statistics")
-                        .Element("ratings")
-                        .Element("bayesaverage")
-                        .Attribute("value");
-
-                    result = new BggDetails()
+                var id = await GetId(name);
+                if (id == 0) result = BggDetails.Empty;
+                else
+                    using (var client = new HttpClient())
                     {
-                        ThumbnailUrl = thumbnailUrl,
-                        Description = Uri.UnescapeDataString(description),
-                        Rating = (float) rating,
-                    };
+                        var response = await client.GetAsync(_baseUrl + "thing?stats=1&id=" + id);
+                        var document =
+                            XDocument.Parse(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
+                        var item = document.Root.Element("item");
 
-                    _memoryCache.Set(name, result,
-                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromDays(365)));
-                }
+                        var thumbnailUrl = item.Element("thumbnail").Value;
+                        var description = item.Element("description").Value;
+                        var rating = item.Element("statistics")
+                            .Element("ratings")
+                            .Element("bayesaverage")
+                            .Attribute("value");
+
+                        result = new BggDetails
+                        {
+                            ThumbnailUrl = thumbnailUrl,
+                            Description = Uri.UnescapeDataString(description),
+                            Rating = (float) rating
+                        };
+                    }
+                _memoryCache.Set(name, result,
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromDays(365)));
+            }
+            else
+            {
+                Debug.WriteLine("from cache!");
             }
 
             return result;
@@ -60,12 +64,13 @@ namespace GctgsWeb.Services
         {
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync(_baseUrl + "search?exact=1&type=boardgame&query=" + name);
+                Debug.WriteLine("search?exact=1&type=boardgame&query=" + Uri.EscapeDataString(name));
+                var response = await client.GetAsync(_baseUrl + "search?exact=1&type=boardgame&query=" + Uri.EscapeDataString(name));
                 var document = XDocument.Parse(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
-                var item = document.Root.Elements("item").OrderByDescending(i => (int) i.Attribute("id")).First();
-                return (int) item.Attribute("id");
+                var item =
+                    document.Root.Elements("item").OrderByDescending(i => (int) i.Attribute("id")).FirstOrDefault();
+                return item != null ? (int) item.Attribute("id") : 0;
             }
         }
-
     }
 }
