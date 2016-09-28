@@ -15,9 +15,9 @@ namespace GctgsWeb.Services
         public DbSet<User> Users { get; set; }
         public DbSet<Request> Requests { get; set; }
 
-        public bool IsAdmin(ClaimsPrincipal User)
+        public bool IsAdmin(ClaimsPrincipal user)
         {
-            return Users.Single(user => user.Crsid == User.Identity.Name).Admin;
+            return Users.Single(u => u.Crsid == user.Identity.Name).Admin;
         }
     }
 }

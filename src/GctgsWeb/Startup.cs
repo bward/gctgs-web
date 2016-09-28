@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.FileProviders;
+using MySQL.Data.EntityFrameworkCore.Extensions;
 
 namespace GctgsWeb
 {
@@ -45,7 +46,7 @@ namespace GctgsWeb
             services.AddApplicationInsightsTelemetry(Configuration);
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             services.AddMemoryCache();
-            services.AddDbContext<GctgsContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<GctgsContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton(RavenClientProvider);
             var ravenAssembly = Assembly.Load(new AssemblyName("BJW.Raven"));
             services.Configure<RazorViewEngineOptions>(options =>
@@ -91,7 +92,7 @@ namespace GctgsWeb
             app.UseCookieAuthentication(CookieAuthentication.DefaultOptions);
 
             var context = app.ApplicationServices.GetService<GctgsContext>();
-            context.Database.Migrate();
+            context.Database.EnsureCreated();
 
             app.UseMvc(routes =>
             {
