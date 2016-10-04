@@ -16,7 +16,8 @@ namespace GctgsWeb.Authorisation
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext authorizationContext, RegisteredUserRequirement requirement)
         {
-            if (_context.Users.Any(user => user.Crsid == authorizationContext.User.Identity.Name))
+            var crsid = authorizationContext.User.Identity.Name;
+            if (crsid != null && _context.Users.Any(user => user.Crsid == crsid))
             {
                 authorizationContext.Succeed(requirement);
             }

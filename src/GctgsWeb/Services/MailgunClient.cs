@@ -18,6 +18,15 @@ namespace GctgsWeb.Services
             _emailSettings = emailSettings;
         }
 
+        public async Task SendNotificationEmail(string email, string to, string from, string boardGame)
+        {
+            await SendEmailAsync(email,
+                from + " would like to play " + boardGame + "!",
+                "Hi " + to + "!\n\n"
+                + from + " has asked for a game of " +  boardGame + ". Why not bring it to the next meeting?"
+                + "\n\nHave fun,\nGCTGS Bot xoxo");
+        }
+
         public async Task SendEmailAsync(string email, string subject, string message)
         {
             using (var client = new HttpClient { BaseAddress = new Uri(_emailSettings.BaseUri) })

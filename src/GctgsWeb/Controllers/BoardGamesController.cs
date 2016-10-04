@@ -16,11 +16,13 @@ namespace GctgsWeb.Controllers
     {
         private readonly GctgsContext _context;
         private readonly EmailSettings _emailSettings;
+        private readonly FirebaseSettings _firebaseSettings;
 
-        public BoardGamesController(GctgsContext context, IOptions<EmailSettings> emailSettings)
+        public BoardGamesController(GctgsContext context, IOptions<EmailSettings> emailSettings, IOptions<FirebaseSettings> firebaseSettings)
         {
             _context = context;
             _emailSettings = emailSettings.Value;
+            _firebaseSettings = firebaseSettings.Value;
         }
 
         public IActionResult Index()
@@ -158,11 +160,13 @@ namespace GctgsWeb.Controllers
             };
 
             var emailClient = new MailgunClient(_emailSettings);
-            await emailClient.SendEmailAsync(result.Owner.Email,
-                requester.Name + " would like to play " + result.Name + "!",
-                "Hi " + result.Owner.Name + "!\n\n"
-                + requester.Name + " has asked for a game of " + result.Name + ". Why not bring it to the next meeting?"
-                + "\n\nHave fun,\nGCTGS Bot xoxo");
+            await emailClient.SendNotificationEmail(result.Owner.Email, result.Owner.Name, requester.Name, result.Name);
+
+            if (result.Owner.FcmToken != null)
+            {
+                var firebaseClient = new FirebaseClient(_firebaseSettings);
+                await firebaseClient.SendRequestNotification(result.Owner.FcmToken, requester, result);
+            }
 
             _context.Requests.Add(request);
             _context.SaveChanges();

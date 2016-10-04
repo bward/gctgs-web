@@ -12,6 +12,7 @@ namespace GctgsWeb.Models
         public string Name { get; set; }
         public string Key { get; set; }
         public bool Admin { get; set; }
+        public string FcmToken { get; set; }
 
         public string Email => Crsid + "@cam.ac.uk";
     }
